@@ -1,0 +1,11 @@
+{
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.extension.sortImports.quoteStyle": "double",
+  "typescript.extension.sortImports.sortMethod": "path",
+  "typescript.extension.sortImports.sortOnSave": true,
+  "typescript.extension.sortImports.pathSortOrder": [
+    "package",
+    "relativeDownLevel",
+    "relativeUpLevel"
+  ]
+}
