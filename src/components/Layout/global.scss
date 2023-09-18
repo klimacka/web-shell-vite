@@ -7,11 +7,16 @@ body {
 }
 a {
   text-decoration: none;
+  color: #6958ff;
 }
 
 .navitem {
   padding: 3px 10px;
+  font-weight: bold;
+  font-variant: small-caps;
 }
-.navitem.is-active {
-  background-color: #eee;
+
+pre,
+code {
+  color: #eee;
 }

@@ -1,21 +1,12 @@
+import { Button, Card, CardContent, Paper, TextField } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
-import "./style.scss";
-import {
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
 
 type CardInfo = {
   id: string;
   label: string;
 };
 
-const tickTimeMilis = 1000;
+const tickTimeMilis = 0;
 const startingItems: CardInfo[] = [
   { id: "starting-item-a", label: "A" },
   { id: "starting-item-b", label: "B" },
@@ -26,8 +17,9 @@ const startingItems: CardInfo[] = [
 const emptySearchResults: CardInfo[] = [];
 const initialSearchTerm = "";
 const initialSearchResultsMeta = {
-  seachTerm: initialSearchTerm,
-  popOffset: 0,
+  term: initialSearchTerm,
+  length: 0,
+  offset: 0,
 };
 
 export function Page() {
@@ -43,7 +35,7 @@ export function Page() {
       return;
     }
 
-    const searchUrl = `https://itunes.apple.com/search?term=${searchTerm}&media=music`;
+    const searchUrl = `https://itunes.apple.com/search?term=${searchTerm}&media=music&limit=200`;
     fetch(searchUrl)
       .then((response) => response.json())
       .then((data) => {
@@ -51,8 +43,9 @@ export function Page() {
           console.warn(`No search results for URL: ${searchUrl}`);
           setSearchResults(emptySearchResults);
           setSearchResultsMeta({
-            seachTerm: searchTerm,
-            popOffset: 0,
+            term: searchTerm,
+            length: 0,
+            offset: 0,
           });
           return;
         }
@@ -81,8 +74,9 @@ export function Page() {
 
         setSearchResults(newSearchResults);
         setSearchResultsMeta({
-          seachTerm: searchTerm,
-          popOffset: 0,
+          term: searchTerm,
+          length: newSearchResults.length,
+          offset: 0,
         });
       })
       .catch((error) => {
@@ -93,10 +87,10 @@ export function Page() {
   const buildNewCardInfos = useCallback(() => {
     const newCardInfos = [...cardInfos.slice(1, 5)];
 
-    if (searchResultsMeta.seachTerm === "") {
+    if (searchResultsMeta.term === "") {
       newCardInfos.push(cardInfos[0]);
     } else {
-      const popIndex = searchResultsMeta.popOffset % searchResults.length;
+      const popIndex = searchResultsMeta.offset % searchResults.length;
 
       const newCardItem = searchResults[popIndex];
       if (!newCardItem || newCardInfos.find((c) => c.id === newCardItem.id)) {
@@ -109,7 +103,7 @@ export function Page() {
 
       setSearchResultsMeta({
         ...searchResultsMeta,
-        popOffset: popIndex + 1,
+        offset: popIndex + 1,
       });
     }
 
@@ -119,12 +113,12 @@ export function Page() {
   const handleTick = useCallback(() => {
     buildNewCardInfos();
 
-    if (searchResultsMeta.seachTerm !== searchTerm) {
+    if (searchResultsMeta.term !== searchTerm) {
       updateSearchResults();
     }
   }, [
     buildNewCardInfos,
-    searchResultsMeta.seachTerm,
+    searchResultsMeta.term,
     searchTerm,
     updateSearchResults,
   ]);
@@ -139,50 +133,55 @@ export function Page() {
     }
 
     setSearchTerm(encodedSearchInput);
-    console.debug(`New search term: ${searchInput} => ${encodedSearchInput}`);
+    // console.debug(`New search term: ${searchInput} => ${encodedSearchInput}`);
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      handleTick();
-    }, tickTimeMilis);
+    if (tickTimeMilis) {
+      const ticker = setInterval(() => {
+        handleTick();
+      }, tickTimeMilis);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(ticker);
+    }
   }, [handleTick]);
 
   return (
     <>
-      <Grid container spacing={2} style={{ width: "100%" }}>
-        <Grid item xs={12}>
-          <TextField
-            label="Search iTunes albums"
-            onChange={handleSearchChange}
-          />
-        </Grid>
-        <Grid item xs={12} sm={8}>
-          <Paper elevation={0}>
-            {cardInfos.map((cardInfo) => (
-              <Card key={`card-${cardInfo.id}`} className="list-item">
-                <CardContent>
-                  <Typography align="center">{cardInfo.label}</Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Button variant="contained" onClick={handleTick}>
-            Tick
-          </Button>
-          <pre
-            style={{ maxWidth: "30rem", overflow: "scroll" }}
-          >{`${JSON.stringify(searchResultsMeta, null, 2)}\n${JSON.stringify(
-            searchResults,
-            null,
-            2,
-          )}`}</pre>
-        </Grid>
-      </Grid>
+      <Paper elevation={2} style={{ width: "100%", padding: "1rem" }}>
+        <TextField
+          label="Search iTunes albums"
+          onChange={handleSearchChange}
+          style={{ width: "100%" }}
+        />
+        {cardInfos.map((cardInfo) => (
+          <Card key={`card-${cardInfo.id}`} style={{ margin: " 1rem 0" }}>
+            <CardContent>
+              <div
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  textAlign: "center",
+                  fontSize: "1.5rem",
+                  height: "1.5rem",
+                }}
+              >
+                {cardInfo.label}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </Paper>
+      <div style={{ padding: "1rem" }}>
+        <Button variant="contained" onClick={handleTick}>
+          Tick
+        </Button>
+        <pre>{`${JSON.stringify(
+          searchResultsMeta,
+          null,
+          2,
+        )}\n\n${JSON.stringify(searchResults, null, 2)}`}</pre>
+      </div>
     </>
   );
 }
