@@ -42,9 +42,18 @@ function Theme({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleToggleTheme = () => {
-      setTheme((currTheme) =>
-        currTheme.palette.mode === "dark" ? lightTheme : darkTheme,
-      );
+      setTheme((currTheme) => {
+        const nextTheme =
+          currTheme.palette.mode === "dark" ? lightTheme : darkTheme;
+
+        if (nextTheme === lightTheme) {
+          document.body.classList.remove("app-theme-dark");
+        } else {
+          document.body.classList.add("app-theme-dark");
+        }
+
+        return nextTheme;
+      });
     };
 
     window.addEventListener("toggleTheme", handleToggleTheme);
@@ -58,9 +67,9 @@ function Theme({ children }: { children: React.ReactNode }) {
 function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div
+      className="app-layout"
       style={{
         display: "flex",
-        backgroundColor: "#111",
       }}
     >
       {children}
@@ -119,6 +128,7 @@ function Sidebar({ children }: { children: React.ReactNode }) {
 
   return (
     <div
+      className="app-sidebar"
       style={{
         padding: 20,
         flexShrink: 0,
@@ -129,7 +139,6 @@ function Sidebar({ children }: { children: React.ReactNode }) {
         width: "10rem",
         height: "100vh",
         position: "fixed",
-        backgroundColor: "#040404",
       }}
     >
       {children}

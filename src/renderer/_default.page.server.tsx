@@ -40,7 +40,7 @@ export function render(pageContext: PageContextServer): TemplateWrapped {
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap"
         />
       </head>
-      <body>
+      <body class="app-theme-dark">
         <div id="${reactRootElementId}">${dangerouslySkipEscape(pageHtml)}</div>
       </body>
     </html>`;

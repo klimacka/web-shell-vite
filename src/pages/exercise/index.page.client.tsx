@@ -6,6 +6,16 @@ type CardInfo = {
   label: string;
 };
 
+type ApiResultItem = {
+  artistName: string;
+  artworkUrl100: string;
+  artworkUrl30: string;
+  artworkUrl60: string;
+  collectionId: number;
+  collectionName: string;
+  trackName: string;
+};
+
 const tickTimeMilis = 0;
 const startingItems: CardInfo[] = [
   { id: "starting-item-a", label: "A" },
@@ -17,6 +27,7 @@ const startingItems: CardInfo[] = [
 const emptySearchResults: CardInfo[] = [];
 const initialSearchTerm = "";
 const initialSearchResultsMeta = {
+  fetchTime: "",
   term: initialSearchTerm,
   length: 0,
   offset: 0,
@@ -31,11 +42,11 @@ export function Page() {
   );
 
   const updateSearchResults = useCallback(() => {
-    if (searchTerm.length < 3) {
+    if (searchTerm.length < 2) {
       return;
     }
 
-    const searchUrl = `https://itunes.apple.com/search?term=${searchTerm}&media=music&limit=200`;
+    const searchUrl = `https://itunes.apple.com/search?term=${searchTerm}&media=music&limit=50`;
     fetch(searchUrl)
       .then((response) => response.json())
       .then((data) => {
@@ -43,6 +54,7 @@ export function Page() {
           console.warn(`No search results for URL: ${searchUrl}`);
           setSearchResults(emptySearchResults);
           setSearchResultsMeta({
+            fetchTime: "",
             term: searchTerm,
             length: 0,
             offset: 0,
@@ -50,7 +62,7 @@ export function Page() {
           return;
         }
 
-        const results = data.results as any[];
+        const results = data.results as ApiResultItem[];
         const sortedByAlbum = results
           .sort((a, b) =>
             a.collectionName === b.collectionName
@@ -67,13 +79,14 @@ export function Page() {
           )
           .filter((r) => !!r.collectionName);
 
-        const newSearchResults = sortedByAlbum.map((result: any) => ({
+        const newSearchResults = sortedByAlbum.map((result: ApiResultItem) => ({
           id: `${result.collectionId}`,
           label: result.collectionName,
         }));
 
         setSearchResults(newSearchResults);
         setSearchResultsMeta({
+          fetchTime: new Date().toISOString(),
           term: searchTerm,
           length: newSearchResults.length,
           offset: 0,
@@ -88,16 +101,17 @@ export function Page() {
     const newCardInfos = [...cardInfos.slice(1, 5)];
 
     if (searchResultsMeta.term === "") {
+      // simply take the first item and append it to the end
       newCardInfos.push(cardInfos[0]);
     } else {
       const popIndex = searchResultsMeta.offset % searchResults.length;
 
       const newCardItem = searchResults[popIndex];
       if (!newCardItem || newCardInfos.find((c) => c.id === newCardItem.id)) {
-        newCardInfos.push(
-          startingItems.find((s) => !newCardInfos.find((c) => c.id === s.id)),
-        );
+        // fill in with the initial search results
+        newCardInfos.push(startingItems[popIndex % 5]);
       } else {
+        // take the next item from the search results and append it to the end
         newCardInfos.push(searchResults[popIndex]);
       }
 
@@ -157,17 +171,7 @@ export function Page() {
         {cardInfos.map((cardInfo) => (
           <Card key={`card-${cardInfo.id}`} style={{ margin: " 1rem 0" }}>
             <CardContent>
-              <div
-                style={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  textAlign: "center",
-                  fontSize: "1.5rem",
-                  height: "1.5rem",
-                }}
-              >
-                {cardInfo.label}
-              </div>
+              <div className="card-label">{cardInfo.label}</div>
             </CardContent>
           </Card>
         ))}

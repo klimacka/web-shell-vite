@@ -2,12 +2,13 @@ body {
   margin: 0;
   font-family: Roboto, sans-serif;
 }
+
 * {
   box-sizing: border-box;
 }
+
 a {
   text-decoration: none;
-  color: #6958ff;
 }
 
 .navitem {
@@ -16,7 +17,35 @@ a {
   font-variant: small-caps;
 }
 
-pre,
-code {
+.app-sidebar {
+  background-color: #eee;
+}
+
+.app-theme-dark {
+  background-color: #111;
   color: #eee;
+
+  a {
+    color: #6958ff;
+  }
+
+  pre,
+  code {
+    color: #eee;
+  }
+
+  .app-sidebar {
+    background-color: #050505;
+  }
+}
+
+.card-label {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
