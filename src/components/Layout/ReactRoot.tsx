@@ -65,16 +65,7 @@ function Theme({ children }: { children: React.ReactNode }) {
 }
 
 function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="app-layout"
-      style={{
-        display: "flex",
-      }}
-    >
-      {children}
-    </div>
-  );
+  return <div className="app-layout">{children}</div>;
 }
 
 function Sidebar({ children }: { children: React.ReactNode }) {
@@ -158,8 +149,7 @@ function Content({ children }: { children: React.ReactNode }) {
     <div
       style={{
         padding: "1rem 1rem 3rem 11rem",
-        paddingBottom: 50,
-        flexGrow: 1,
+        width: "100vw",
         minHeight: "100vh",
       }}
     >

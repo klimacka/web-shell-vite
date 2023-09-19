@@ -1,10 +1,6 @@
-import { Button, Card, CardContent, Paper, TextField } from "@mui/material";
+import { Button, Paper, TextField } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
-
-type CardInfo = {
-  id: string;
-  label: string;
-};
+import { SongCard, SongCardInfo } from "../../components/excercise/SongCard";
 
 type ApiResultItem = {
   artistName: string;
@@ -17,14 +13,14 @@ type ApiResultItem = {
 };
 
 const tickTimeMilis = 0;
-const startingItems: CardInfo[] = [
+const startingItems: SongCardInfo[] = [
   { id: "starting-item-a", label: "A" },
   { id: "starting-item-b", label: "B" },
   { id: "starting-item-c", label: "C" },
   { id: "starting-item-d", label: "D" },
   { id: "starting-item-e", label: "E" },
 ];
-const emptySearchResults: CardInfo[] = [];
+const emptySearchResults: SongCardInfo[] = [];
 const initialSearchTerm = "";
 const initialSearchResultsMeta = {
   fetchTime: "",
@@ -82,6 +78,9 @@ export function Page() {
         const newSearchResults = sortedByAlbum.map((result: ApiResultItem) => ({
           id: `${result.collectionId}`,
           label: result.collectionName,
+          artistName: result.artistName,
+          trackName: result.trackName,
+          artworkUrl: result.artworkUrl60,
         }));
 
         setSearchResults(newSearchResults);
@@ -166,25 +165,21 @@ export function Page() {
         <TextField
           label="Search iTunes albums"
           onChange={handleSearchChange}
-          style={{ width: "100%" }}
+          style={{ width: "100%", flexWrap: "wrap" }}
         />
-        {cardInfos.map((cardInfo) => (
-          <Card key={`card-${cardInfo.id}`} style={{ margin: " 1rem 0" }}>
-            <CardContent>
-              <div className="card-label">{cardInfo.label}</div>
-            </CardContent>
-          </Card>
-        ))}
+        {cardInfos
+          .filter((i) => !!i)
+          .map((cardInfo) => (
+            <SongCard key={cardInfo.id} info={cardInfo}></SongCard>
+          ))}
       </Paper>
       <div style={{ padding: "1rem" }}>
         <Button variant="contained" onClick={handleTick}>
           Tick
         </Button>
-        <pre>{`${JSON.stringify(
-          searchResultsMeta,
-          null,
-          2,
-        )}\n\n${JSON.stringify(searchResults, null, 2)}`}</pre>
+        <pre
+          style={{ padding: "1rem", width: "100%", overflow: "scroll" }}
+        >{`${JSON.stringify(searchResultsMeta, null, 2)}`}</pre>
       </div>
     </>
   );
