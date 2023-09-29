@@ -39,7 +39,7 @@ export function Page() {
   );
 
   const updateSearchResults = useCallback(() => {
-    if (searchTerm.length < 3) {
+    if (searchTerm.length < 2) {
       return;
     }
 
@@ -47,7 +47,7 @@ export function Page() {
     fetch(searchUrl)
       .then((response) => response.json())
       .then((data) => {
-        if (!data || !data.results || !data.results.length) {
+        if (!data?.results?.length) {
           console.warn(`No search results for URL: ${searchUrl}`);
           setSearchResults(emptySearchResults);
           setSearchResultsMeta({
@@ -58,7 +58,14 @@ export function Page() {
         }
 
         const results = data.results as any[];
-        const sortedByAlbum = results
+        const newSearchResults = results
+          .filter((r) => !!r.collectionName)
+          // remove duplicates
+          .filter(
+            (result, index, self) =>
+              index ===
+              self.findIndex((r) => r.collectionId === result.collectionId),
+          )
           .sort((a, b) =>
             a.collectionName === b.collectionName
               ? 0
@@ -66,18 +73,10 @@ export function Page() {
               ? -1
               : 1,
           )
-          // remove duplicates
-          .filter(
-            (result, index, self) =>
-              index ===
-              self.findIndex((r) => r.collectionId === result.collectionId),
-          )
-          .filter((r) => !!r.collectionName);
-
-        const newSearchResults = sortedByAlbum.map((result: any) => ({
-          id: `${result.collectionId}`,
-          label: result.collectionName,
-        }));
+          .map((result: any) => ({
+            id: `${result.collectionId}`,
+            label: result.collectionName,
+          }));
 
         setSearchResults(newSearchResults);
         setSearchResultsMeta({
