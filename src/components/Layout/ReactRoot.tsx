@@ -1,8 +1,8 @@
 import React, { FC } from "react";
+import "./global.scss";
 import { Link } from "../_/Link";
 import logo from "../../assets/logo.svg";
 import { PageContextProvider } from "../../hooks/usePageContext";
-import "./global.scss";
 import type { PageContext } from "../../types/page.types";
 
 export const ReactRoot: FC<{
@@ -25,6 +25,9 @@ export const ReactRoot: FC<{
           </Link>
           <Link className="navitem" href="/admin">
             Admin
+          </Link>
+          <Link className="navitem" href="/exercise">
+            Exercise
           </Link>
         </Sidebar>
         <Content>{children}</Content>
