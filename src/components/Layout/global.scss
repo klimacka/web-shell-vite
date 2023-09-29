@@ -1,17 +1,40 @@
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: Roboto, sans-serif;
 }
+
 * {
   box-sizing: border-box;
 }
+
 a {
   text-decoration: none;
 }
 
 .navitem {
   padding: 3px 10px;
+  font-weight: bold;
+  font-variant: small-caps;
 }
-.navitem.is-active {
+
+.app-sidebar {
   background-color: #eee;
+}
+
+.app-theme-dark {
+  background-color: #111;
+  color: #eee;
+
+  a {
+    color: #6958ff;
+  }
+
+  pre,
+  code {
+    color: #eee;
+  }
+
+  .app-sidebar {
+    background-color: #050505;
+  }
 }

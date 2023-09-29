@@ -30,7 +30,17 @@ export function render(pageContext: PageContextServer): TemplateWrapped {
 
   return escapeInject`<!DOCTYPE html>
     <html>
-      <body>
+      <head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap"
+        />
+      </head>
+      <body class="app-theme-dark">
         <div id="${reactRootElementId}">${dangerouslySkipEscape(pageHtml)}</div>
       </body>
     </html>`;
